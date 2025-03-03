@@ -19,6 +19,7 @@ jobs:
         with:
           node-version: "20"
           cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
 
       - name: Get Yarn Cache Dir Path
         id: yarn-cache-dir-path
@@ -38,7 +39,8 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        if: steps.yarn-cache.outputs.cache-hit !='true'
+        run: yarn install --frozen-lockfile --prefer-offline --network-confurrency 8
 
       # - name: Lint test
       #   run: yarn lint
