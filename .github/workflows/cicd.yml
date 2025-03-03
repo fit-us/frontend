@@ -28,10 +28,14 @@ jobs:
         uses: actions/cache@v4
         id: yarn-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          path: |
+            **/node_modules
+            ~/.npm
+            ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
+            ${{ runner.os }}-
 
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
