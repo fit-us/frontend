@@ -1,0 +1,49 @@
+name: SolutionChallenge FE Actions
+
+on:
+  push: 
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-Version: '20'
+        cache: 'yarn'
+
+    - name: Get Yarn Cache Dir Path
+      id: yarn-cache-dir-path
+      run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+    - name: Caching Yarn Dependencies
+      uses: actions/cache@v4
+      id: yarn-cache
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+
+    - name: Install Dependencies
+      run: yarn install --frozen-lockfile
+
+    - name: Lint test
+      run: yarn lint
+
+    - name: Test
+      run: yarn test
+
+    - name: Build
+      run: yarn build
+
+
+      
