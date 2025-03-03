@@ -12,7 +12,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    outputs:
+      cache-hit: ${{ steps.yarn-cache.outputs.cache-hit}}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
