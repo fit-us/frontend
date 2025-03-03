@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main, develop]
 
+env:
+  YARN_ENABLE_GLOBAL_CACHE: "true"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,7 +42,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install Dependencies
-        if: steps.yarn-cache.outputs.cache-hit !='true'
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile --prefer-offline --network-confurrency 8
 
       # - name: Lint test
@@ -47,8 +50,18 @@ jobs:
 
       # - name: Test
       #   run: yarn test
+      - name: Cache Build
+        id: build-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            dist
+            .angular
+            build
+          key: ${{ runner.os }}-build-${{ hashFiles('**/*.{js,jsx,ts,tsx,json}') }}-${{ hashFiles('yarn.lock') }}
 
       - name: Build
+        if: steps.build-cache.outputs.cache-hit != 'true'
         run: yarn build
 
       # - name: Hashing Tag
